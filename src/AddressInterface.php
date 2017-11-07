@@ -11,5 +11,5 @@ namespace Concrete\Package\BaclucPersonPackage\Src;
 
 interface AddressInterface
 {
-    public static function getFieldTypeClass();
+    public static function getFieldTypeClass ();
 }

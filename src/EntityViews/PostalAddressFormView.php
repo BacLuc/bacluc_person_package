@@ -18,32 +18,32 @@ class PostalAddressFormView extends AbstractFormView
      * @param $clientSideValidationActivated
      * @return mixed
      */
-    public function getFormView($form, $clientSideValidationActivated=true)
+    public function getFormView ($form, $clientSideValidationActivated = true)
     {
         $variables = $this->getFilledVariables($clientSideValidationActivated);
 
 
-        $html="
+        $html = "
         <div class='row'>
-            ".$variables['id']['input'] ."
+            " . $variables['id']['input'] . "
             <div class='row'>
                 <div class = 'col-xs-12 col-sm-6'>
                     <div class='row'>
                         <div class='col-sm-12 col-md-2'>
-                            <label>".$variables['type']['label'] ."</label>
+                            <label>" . $variables['type']['label'] . "</label>
                         </div>
                         <div class='col-sm-12 col-md-10'>
-                            ".$variables['type']['input'] ."
+                            " . $variables['type']['input'] . "
                         </div>
                     </div>
                 </div>
                 <div class = 'col-xs-12 col-sm-6'>
                     <div class='row'>
                         <div class='col-sm-12 col-md-2'>
-                            <label>".$variables['organisation']['label'] ."</label>
+                            <label>" . $variables['organisation']['label'] . "</label>
                         </div>
                         <div class='col-sm-12 col-md-10'>
-                            ".$variables['organisation']['input'] ."
+                            " . $variables['organisation']['input'] . "
                         </div>
                     </div>
                 </div>

@@ -7,29 +7,28 @@
  */
 
 namespace Concrete\Package\BaclucPersonPackage\Src;
+
+use Concrete\Package\BasicTablePackage\Src\BaseEntity;
+use Concrete\Package\BasicTablePackage\Src\DiscriminatorEntry\DiscriminatorEntry;
 use Concrete\Package\BasicTablePackage\Src\EntityGetterSetter;
-use Concrete\Package\BasicTablePackage\Src\FieldTypes\DirectEditAssociatedEntityField;
+use Concrete\Package\BasicTablePackage\Src\FieldTypes\DateField;
 use Concrete\Package\BasicTablePackage\Src\FieldTypes\DirectEditAssociatedEntityMultipleField;
 use Concrete\Package\BasicTablePackage\Src\FieldTypes\DropdownLinkField;
 use Concrete\Package\BasicTablePackage\Src\FieldTypes\DropdownMultilinkField;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
-use Concrete\Package\BasicTablePackage\Src\FieldTypes\DateField;
-use Concrete\Package\BasicTablePackage\Src\BaseEntity;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 
 /*because of the hack with @DiscriminatorEntry Annotation, all Doctrine Annotations need to be
 properly imported*/
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Concrete\Package\BasicTablePackage\Src\DiscriminatorEntry\DiscriminatorEntry;
-use Doctrine\ORM\Mapping\Table;
 
 /**
  * Class Person
  * package Concrete\Package\BaclucPersonPackage\Src
  * @Entity
- *  @InheritanceType("JOINED")
+ * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorEntry( value = "Concrete\Package\BaclucPersonPackage\Src\Person")
  * @Table(name="bacluc_person")
@@ -45,8 +44,6 @@ class Person extends BaseEntity
      * @GEneratedValue(strategy="AUTO")
      */
     protected $id;
-
-
 
 
     /**
@@ -123,9 +120,9 @@ class Person extends BaseEntity
      * @var EmailAddress[]
      * @ManyToMany(targetEntity="Concrete\Package\BaclucPersonPackage\Src\EmailAddress")
      * @JoinTable(name="bacluc_person_email_address",
-         joinColumns={@JoinColumn(name="person_id" , referencedColumnName="id")},
-        inverseJoinColumns={@JoinColumn(name="address_id" , referencedColumnName="id")}
-        )
+    joinColumns={@JoinColumn(name="person_id" , referencedColumnName="id")},
+    inverseJoinColumns={@JoinColumn(name="address_id" , referencedColumnName="id")}
+    )
      */
     protected $EmailAddresses;
 
@@ -140,7 +137,6 @@ class Person extends BaseEntity
     protected $Addresses;
 
 
-
 //
 //    /**
 //     * @var Note[]
@@ -150,34 +146,33 @@ class Person extends BaseEntity
 //    protected $Notes;
 
 
-
-    public function __construct(){
+    public function __construct ()
+    {
         parent::__construct();
-        if($this->Parents == null){
+        if ($this->Parents == null) {
             $this->Parents = new ArrayCollection();
         }
 
 
-        if($this->Children == null){
+        if ($this->Children == null) {
             $this->Children = new ArrayCollection();
         }
 
-        if($this->PostalAddresses == null){
+        if ($this->PostalAddresses == null) {
             $this->PostalAddresses = new ArrayCollection();
         }
 
-        if($this->PhonenumberAddresses == null){
+        if ($this->PhonenumberAddresses == null) {
             $this->PhonenumberAddresses = new ArrayCollection();
         }
 
-        if($this->EmailAddresses == null){
+        if ($this->EmailAddresses == null) {
             $this->EmailAddresses = new ArrayCollection();
         }
 
-        if($this->Addresses == null){
+        if ($this->Addresses == null) {
             $this->Addresses = new ArrayCollection();
         }
-
 
 
 //        if($this->Notes == null){
@@ -185,7 +180,33 @@ class Person extends BaseEntity
 //        }
     }
 
-    public function setDefaultFieldTypes()
+    public static function getDefaultGetDisplayStringFunction ()
+    {
+        $function = function (Person $item) {
+            $dateField = new DateField("test", "test", "test");
+            $returnString = "";
+            if (strlen($item->scoutname) > 0) {
+                $returnString .= $item->scoutname . " ";
+            }
+            if (strlen($item->surname != null) > 0) {
+                $returnString .= $item->surname . " ";
+            }
+            if (strlen($item->middlename != null)) {
+                $returnString .= $item->middlename . " ";
+            }
+            if (strlen($item->lastname != null)) {
+                $returnString .= $item->lastname . " ";
+            }
+            if ($item->birthdate != null) {
+                $dateField->setSQLValue($item->birthdate);
+                $returnString .= " " . $dateField->getTableView();
+            }
+            return $returnString;
+        };
+        return $function;
+    }
+
+    public function setDefaultFieldTypes ()
     {
         parent::setDefaultFieldTypes(); // TODO: Change the autogenerated stub
         $this->fieldTypes['scoutname']->setLabel("Scoutname");
@@ -203,72 +224,44 @@ class Person extends BaseEntity
         $this->fieldTypes['Addresses']->setLabel("Other Addresses");
 
 
-
-
-
-
-
         /**
          * @var DropdownMultilinkField $addresses
          */
         $addresses = $this->fieldTypes['PostalAddresses'];
-        $directEditField = new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Postal Addresses", $addresses->getPostName());
-        DropdownLinkField::copyLinkInfo($addresses,$directEditField);
-        $this->fieldTypes['PostalAddresses']=$directEditField;
+        $directEditField =
+            new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Postal Addresses",
+                                                        $addresses->getPostName());
+        DropdownLinkField::copyLinkInfo($addresses, $directEditField);
+        $this->fieldTypes['PostalAddresses'] = $directEditField;
 
         /**
          * @var DropdownMultilinkField $addresses
          */
         $addresses = $this->fieldTypes['PhonenumberAddresses'];
-        $directEditField = new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Phone numbers", $addresses->getPostName());
-        DropdownLinkField::copyLinkInfo($addresses,$directEditField);
-        $this->fieldTypes['PhonenumberAddresses']=$directEditField;
+        $directEditField = new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Phone numbers",
+                                                                       $addresses->getPostName());
+        DropdownLinkField::copyLinkInfo($addresses, $directEditField);
+        $this->fieldTypes['PhonenumberAddresses'] = $directEditField;
 
 
         /**
          * @var DropdownMultilinkField $addresses
          */
         $addresses = $this->fieldTypes['EmailAddresses'];
-        $directEditField = new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Email Addresses", $addresses->getPostName());
-        DropdownLinkField::copyLinkInfo($addresses,$directEditField);
-        $this->fieldTypes['EmailAddresses']=$directEditField;
+        $directEditField = new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Email Addresses",
+                                                                       $addresses->getPostName());
+        DropdownLinkField::copyLinkInfo($addresses, $directEditField);
+        $this->fieldTypes['EmailAddresses'] = $directEditField;
 
         /**
          * @var DropdownMultilinkField $addresses
          */
         $addresses = $this->fieldTypes['Addresses'];
-        $directEditField = new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Other Addresses", $addresses->getPostName());
-        DropdownLinkField::copyLinkInfo($addresses,$directEditField);
-        $this->fieldTypes['Addresses']=$directEditField;
+        $directEditField = new DirectEditAssociatedEntityMultipleField($addresses->getSQLFieldName(), "Other Addresses",
+                                                                       $addresses->getPostName());
+        DropdownLinkField::copyLinkInfo($addresses, $directEditField);
+        $this->fieldTypes['Addresses'] = $directEditField;
     }
-
-
-    public static function getDefaultGetDisplayStringFunction(){
-        $function = function(Person $item){
-            $dateField = new DateField("test", "test", "test");
-            $returnString ="";
-            if(strlen($item->scoutname)>0){
-                $returnString.=$item->scoutname." ";
-            }
-            if(strlen($item->surname!=null)>0){
-                $returnString.=$item->surname." ";
-            }
-            if(strlen($item->middlename!=null)){
-                $returnString.=$item->middlename." ";
-            }
-            if(strlen($item->lastname!=null)){
-                $returnString.=$item->lastname." ";
-            }
-            if($item->birthdate!=null){
-                $dateField->setSQLValue($item->birthdate);
-                $returnString.= " ".$dateField->getTableView();
-            }
-            return $returnString;
-        };
-        return $function;
-    }
-
-
 
 
 }

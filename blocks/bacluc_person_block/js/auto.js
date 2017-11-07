@@ -1,6 +1,7 @@
-(function($){
+(function ($) {
+    "use strict";
     var datefields = $(".datepickerdiv").find("input");
-    if(datefields.length > 0 ) {
+    if (datefields.length > 0) {
         datefields.on('changeDate', function (e) {
             var changed = this;
             $(".datepickerdiv").find("input").each(function () {
